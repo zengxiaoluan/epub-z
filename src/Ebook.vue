@@ -93,7 +93,6 @@ export default {
 		showEpub() {
 			//解析电子书,生成Book对象
 			this.book = new Epub(DOWNLOAD_URL);
-			console.log(this.book)
 
 
 			let readBox = document.getElementById('center')
@@ -107,8 +106,11 @@ export default {
 				allowScriptedContent: true
 			})
 
-			//通过Rendtion.display渲染电子书
-			this.rendition.display();
+			window.rendition = this.rendition
+
+			let cfi = this.$route.query.cfi || void 0
+			this.rendition.display(cfi);
+
 			//获取Theme对象
 			this.themes = this.rendition.themes;
 			//设置默认字体
@@ -134,14 +136,16 @@ export default {
 				this.bookAvailable = true;
 			})
 		},
-		//翻页功能
-		prevPage() {
-			if (this.rendition) {
-				this.rendition.prev();
-			}
+
+		async prevPage() {
+			await this.rendition.prev();
+			this.updateCfi()
 		},
-		nextPage() {
-			this.rendition.next();
+
+		async nextPage() {
+			await this.rendition.next();
+			this.updateCfi()
+
 		},
 		//标题栏和菜单栏
 		toggleTitleAndMenu() {
@@ -185,11 +189,22 @@ export default {
 			this.$refs.menuBar.hideContent();
 		},
 		//根据链接跳转到指定位置(目录)
-		jumpTo(href) {
-			console.warn(href);
-			this.rendition.display(href);
+		async jumpTo(href) {
+
+			await this.rendition.display(href);
+
+			this.updateCfi()
+
+
 			this.hideTitleAndMenu();
 		},
+
+		updateCfi() {
+			let location = this.rendition.currentLocation();
+			let cfiString = location.start.cfi
+
+			this.$router.replace({ query: { cfi: cfiString } })
+		}
 	},
 	mounted() {
 		setTimeout(() => {
