@@ -2,13 +2,15 @@
 	<div class="ebook">
 		<title-bar :ifTitleAndMenuShow="ifTitleAndMenuShow"></title-bar>
 		<div class="read-wrapper">
-			<div id='read'></div>
 			<div class="mask">
 				<div class="left" @click="prevPage">
 				</div>
 				<div id="center" class="center" @click="toggleTitleAndMenu"></div>
 				<div class="right" @click="nextPage"></div>
 			</div>
+
+			<div id='read'></div>
+
 		</div>
 		<menu-bar :ifTitleAndMenuShow="ifTitleAndMenuShow" :fontSizeList="fontSizeList"
 			:defaultFontSize="defaultFontSize" @setFontSize="setFontSize" :themeList="themeList"
@@ -128,12 +130,20 @@ export default {
 				this.navigation = this.book.navigation;
 
 
-				// console.log(this.navigation);
+
 				return this.book.locations.generate()
 			}).then(result => {
 				this.locations = this.book.locations;
 				// this.onProgressChange(50); //实现跳转到百分之50的位置
 				this.bookAvailable = true;
+
+				this.listenIframeEvent()
+			})
+		},
+
+		listenIframeEvent() {
+			window.frames[0].addEventListener('pointerup', (e) => {
+				this.toggleTitleAndMenu()
 			})
 		},
 
@@ -217,6 +227,10 @@ export default {
 <style>
 .epub-container {
 	margin: 0 auto;
+
+	border: 1px dashed greenyellow;
+	border-top: none;
+	border-bottom: none;
 }
 </style>
 
@@ -251,9 +265,7 @@ $fontSize: 37.5;
 
 			.center {
 				flex: 1;
-				border: 1px dashed greenyellow;
-				border-top: none;
-				border-bottom: none;
+
 			}
 
 			.right {
