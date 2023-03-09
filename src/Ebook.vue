@@ -88,9 +88,7 @@ export default {
 		}
 	},
 	methods: {
-		change(e) {
-			console.log(e.target.files)
-		},
+
 		//电子书的解析和渲染
 		showEpub() {
 			//解析电子书,生成Book对象
@@ -128,8 +126,6 @@ export default {
 			this.book.ready.then(() => {
 				//生成目录
 				this.navigation = this.book.navigation;
-
-
 
 				return this.book.locations.generate()
 			}).then(result => {
@@ -216,10 +212,29 @@ export default {
 			this.$router.replace({ query: { cfi: cfiString } })
 		}
 	},
+
 	mounted() {
+		// 等待父组件 mounted
 		setTimeout(() => {
 			this.showEpub()
-		}, 2 * 1000);
+		}, 0);
+
+		var keyListener = (e) => {
+
+			// Left Key
+			if ((e.keyCode || e.which) == 37) {
+				this.prevPage()
+			}
+
+			// Right Key
+			if ((e.keyCode || e.which) == 39) {
+				this.nextPage()
+			}
+
+		};
+
+
+		document.addEventListener("keyup", keyListener, false);
 	}
 }
 </script>
