@@ -124,6 +124,15 @@ export default {
         allowScriptedContent: true
       });
 
+      this.rendition.on("rendered", (e, i) => {
+        i.document.documentElement.addEventListener(
+          "click",
+          (cfiRange, contents) => {
+            this.toggleTitleAndMenu();
+          }
+        );
+      });
+
       let cfi = this.$route.query.cfi || void 0;
       this.rendition.display(cfi);
 
@@ -150,24 +159,7 @@ export default {
           this.locations = this.book.locations;
           // this.onProgressChange(50); //实现跳转到百分之50的位置
           this.bookAvailable = true;
-
-          this.listenIframeEvent();
         });
-    },
-
-    listenIframeEvent() {
-      let frame = window.frames[0];
-
-      if (frame.clicked) return;
-
-      console.log("add event");
-
-      frame.clicked = true;
-
-      frame.addEventListener("click", e => {
-        console.log("clicked");
-        this.toggleTitleAndMenu();
-      });
     },
 
     async prevPage() {
@@ -228,8 +220,6 @@ export default {
       this.updateCfi();
 
       this.hideTitleAndMenu();
-
-      this.listenIframeEvent();
     },
 
     updateCfi() {
@@ -239,8 +229,6 @@ export default {
       this.$router.replace({
         query: { cfi: cfiString, bookName: this.currentBookName }
       });
-
-      this.listenIframeEvent();
     }
   },
 
