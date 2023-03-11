@@ -8,16 +8,13 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
+      name: "home",
       path: "/",
-      redirect: "/ebook"
+      component: Home
     },
     {
       path: "/ebook",
       component: Ebook
-    },
-    {
-      path: "/home",
-      component: Home
     }
   ]
 });

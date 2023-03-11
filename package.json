@@ -13,6 +13,7 @@
   "dependencies": {
     "easy-indexed": "^1.0.0",
     "epubjs": "^0.3.84",
+    "localforage": "^1.10.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

@@ -1,66 +1,96 @@
 <template>
+  <div class="container">
+    <template v-for="(value, index) in allBooks">
+      <div :key="value + '-outer'">
+        <div :key="value" :id="'viewer-' + index"></div>
+
+        <button @click="readThisBook(value)">Read</button>
+      </div>
+    </template>
+
     <div>
-        <input @change="change" type="file" />
-        <div id="viewer"></div>
+      Add new book.
+      <input @change="change" type="file" />
     </div>
+  </div>
 </template>
 
+<style scoped>
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, 50%);
+}
+</style>
+
 <script>
-import Epub from 'epubjs'
-// import localdb from '../packages/z-db'
-import localdb from 'easy-indexed'
-
-
-
+import Epub from "epubjs";
+import localForage from "localForage";
 
 export default {
-    methods: {
-        change(e) {
+  data() {
+    return {
+      allBooks: []
+    };
+  },
+  async mounted() {
+    let allBooks = await localForage.keys();
+    this.allBooks = allBooks;
+    console.log(allBooks);
 
-            var file = e.target.files[0];
-            var reader = new FileReader();
-            reader.onload = openBook;
-            reader.readAsArrayBuffer(file);
-
-            let book = new Epub()
-
-
-
-            async function openBook(e) {
-                var bookData = e.target.result;
-
-                await localdb.initialize()
-
-                let key = 'epub-z-book-0'
-
-                await localdb.set(key, bookData)
-
-
-
-
-
-
-
-
-                let fromdb = await localdb.get(key)
-
-
-                book.open(fromdb);
-
-                let rendition = book.renderTo("viewer", {
-                    width: "100%",
-                    height: 600
-                });
-
-
-                rendition.display()
-
-
-
-
-            }
-        }
+    for (let i = 0; i < allBooks.length; i++) {
+      this.renderBook(i, allBooks[i]);
     }
-}
-</script>
+  },
+  methods: {
+    readThisBook(bookName) {
+      console.log(bookName, "----");
+      this.$router.push({ path: "ebook", query: { bookName } });
+    },
+    async renderBook(key, value) {
+      let book = new Epub();
 
+      let arrayBuffer = await localForage.getItem(value);
+
+      book.open(arrayBuffer);
+
+      let rendition = book.renderTo("viewer-" + key, {
+        width: "100%",
+        height: 600
+      });
+
+      rendition.display();
+    },
+    change(e) {
+      var file = e.target.files[0];
+      console.log(file);
+
+      let key = file.name;
+
+      var reader = new FileReader();
+      reader.onload = openBook;
+      reader.readAsArrayBuffer(file);
+
+      let book = new Epub();
+
+      async function openBook(e) {
+        var bookData = e.target.result;
+
+        await localForage.setItem(key, bookData);
+
+        let fromdb = await localForage.getItem(key);
+
+        location.reload();
+
+        book.open(fromdb);
+
+        let rendition = book.renderTo("viewer", {
+          width: "100%",
+          height: 600
+        });
+
+        rendition.display();
+      }
+    }
+  }
+};
+</script>
