@@ -3,9 +3,9 @@
     <title-bar :ifTitleAndMenuShow="ifTitleAndMenuShow"></title-bar>
     <div class="read-wrapper">
       <div class="mask">
-        <div class="left" @click="prevPage"></div>
+        <div class="left" @click="prevPage">Click for pre page.</div>
         <div id="center" class="center" @click="toggleTitleAndMenu"></div>
-        <div class="right" @click="nextPage"></div>
+        <div class="right" @click="nextPage">Click for next page.</div>
       </div>
 
       <div id="read"></div>
@@ -278,6 +278,15 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+.left,
+.right {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  color: aliceblue;
+  cursor: pointer;
+}
+
 $fontSize: 37.5;
 
 @function px2rem($px) {

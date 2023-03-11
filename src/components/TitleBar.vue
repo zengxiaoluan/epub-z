@@ -1,19 +1,8 @@
 <template>
   <transition name="slide-down">
     <div class="title-wrapper" v-show="ifTitleAndMenuShow">
-      <div @click="goHome" class="left" style="cursor:pointer">
+      <div @click="goHome" title="Go home" class="left" style="cursor:pointer">
         <span class="iconfont icon">&#xe617;</span>
-      </div>
-      <div class="right">
-        <div class="icon-wrapper icon">
-          <span class="iconfont">&#xe61d;</span>
-        </div>
-        <div class="icon-wrapper">
-          <span class="iconfont icon">&#xe63a;</span>
-        </div>
-        <div class="icon-wrapper">
-          <span class="iconfont icon">&#xe65b;</span>
-        </div>
       </div>
     </div>
   </transition>

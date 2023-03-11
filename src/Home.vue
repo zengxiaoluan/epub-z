@@ -43,7 +43,6 @@ export default {
   },
   methods: {
     readThisBook(bookName) {
-      console.log(bookName, "----");
       this.$router.push({ path: "ebook", query: { bookName } });
     },
     async renderBook(key, value) {
