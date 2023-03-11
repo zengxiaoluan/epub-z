@@ -24,7 +24,7 @@
 
 <script>
 import Epub from "epubjs";
-import localForage from "localForage";
+import localForage from "localforage";
 
 export default {
   data() {

@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import localForage from "localForage";
+import localForage from "localforage";
 import Epub from "epubjs";
 
 import TitleBar from "@/components/TitleBar";
