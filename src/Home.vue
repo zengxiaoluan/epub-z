@@ -1,24 +1,36 @@
 <template>
-  <div class="container">
-    <template v-for="(value, index) in allBooks">
-      <div :key="value + '-outer'">
-        <div :key="value" :id="'viewer-' + index"></div>
+    <div class="container">
+        <template v-for="(value, index) in allBooks">
+            <div :key="value + '-outer'">
+                <div :key="value" :id="'viewer-' + index"></div>
 
-        <button @click="readThisBook(value)">Read</button>
-      </div>
-    </template>
+                <button @click="readThisBook(value)">Read</button>
+            </div>
+        </template>
 
-    <div>
-      Add new book.
-      <input @change="change" type="file" />
+        <div class="add">
+            <input @change="change" type="file" />
+        </div>
     </div>
-  </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .container {
-  display: grid;
-  grid-template-columns: repeat(2, 50%);
+    display: grid;
+    grid-template-columns: repeat(2, 50%);
+    // column-gap: 5px;
+    // row-gap: 5px;
+
+   & > div {
+        border: 1px dashed gray;
+    }
+
+    .add {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 600px;
+    }
 }
 </style>
 
@@ -27,69 +39,69 @@ import Epub from "epubjs";
 import localForage from "localforage";
 
 export default {
-  data() {
-    return {
-      allBooks: []
-    };
-  },
-  async mounted() {
-    let allBooks = await localForage.keys();
-    this.allBooks = allBooks;
-    console.log(allBooks);
-
-    for (let i = 0; i < allBooks.length; i++) {
-      this.renderBook(i, allBooks[i]);
-    }
-  },
-  methods: {
-    readThisBook(bookName) {
-      this.$router.push({ path: "ebook", query: { bookName } });
+    data() {
+        return {
+            allBooks: []
+        };
     },
-    async renderBook(key, value) {
-      let book = new Epub();
+    async mounted() {
+        let allBooks = await localForage.keys();
+        this.allBooks = allBooks;
+        console.log(allBooks);
 
-      let arrayBuffer = await localForage.getItem(value);
-
-      book.open(arrayBuffer);
-
-      let rendition = book.renderTo("viewer-" + key, {
-        width: "100%",
-        height: 600
-      });
-
-      rendition.display();
+        for (let i = 0; i < allBooks.length; i++) {
+            this.renderBook(i, allBooks[i]);
+        }
     },
-    change(e) {
-      var file = e.target.files[0];
-      console.log(file);
+    methods: {
+        readThisBook(bookName) {
+            this.$router.push({ path: "ebook", query: { bookName } });
+        },
+        async renderBook(key, value) {
+            let book = new Epub();
 
-      let key = file.name;
+            let arrayBuffer = await localForage.getItem(value);
 
-      var reader = new FileReader();
-      reader.onload = openBook;
-      reader.readAsArrayBuffer(file);
+            book.open(arrayBuffer);
 
-      let book = new Epub();
+            let rendition = book.renderTo("viewer-" + key, {
+                width: "100%",
+                height: 600
+            });
 
-      async function openBook(e) {
-        var bookData = e.target.result;
+            rendition.display();
+        },
+        change(e) {
+            var file = e.target.files[0];
+            console.log(file);
 
-        await localForage.setItem(key, bookData);
+            let key = file.name;
 
-        let fromdb = await localForage.getItem(key);
+            var reader = new FileReader();
+            reader.onload = openBook;
+            reader.readAsArrayBuffer(file);
 
-        location.reload();
+            let book = new Epub();
 
-        book.open(fromdb);
+            async function openBook(e) {
+                var bookData = e.target.result;
 
-        let rendition = book.renderTo("viewer", {
-          width: "100%",
-          height: 600
-        });
+                await localForage.setItem(key, bookData);
 
-        rendition.display();
-      }
+                let fromdb = await localForage.getItem(key);
+
+                location.reload();
+
+                book.open(fromdb);
+
+                let rendition = book.renderTo("viewer", {
+                    width: "100%",
+                    height: 600
+                });
+
+                rendition.display();
+            }
+        }
     }
-  }
 };
 </script>

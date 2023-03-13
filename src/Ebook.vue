@@ -3,9 +3,9 @@
     <title-bar :ifTitleAndMenuShow="ifTitleAndMenuShow"></title-bar>
     <div class="read-wrapper">
       <div class="mask">
-        <div class="left" @click="prevPage">Click for pre page.</div>
+        <div v-if="!isMobile" class="left" @click="prevPage">Click for pre page.</div>
         <div id="center" class="center" @click="toggleTitleAndMenu"></div>
-        <div class="right" @click="nextPage">Click for next page.</div>
+        <div v-if="!isMobile" class="right" @click="nextPage">Click for next page.</div>
       </div>
 
       <div id="read"></div>
@@ -34,6 +34,8 @@ import Epub from "epubjs";
 import TitleBar from "@/components/TitleBar";
 import MenuBar from "@/components/MenuBar";
 
+import {getFontSize,setFontSize,isMobile} from './utils/font-size'
+
 export default {
   components: {
     TitleBar,
@@ -41,6 +43,7 @@ export default {
   },
   data() {
     return {
+      isMobile:isMobile(),
       currentBookName: "",
       ifTitleAndMenuShow: false,
       fontSizeList: [
@@ -52,7 +55,7 @@ export default {
         { fontSize: 22 },
         { fontSize: 24 }
       ],
-      defaultFontSize: 16,
+      defaultFontSize: getFontSize(),
       themeList: [
         {
           name: "default",
@@ -186,6 +189,8 @@ export default {
       if (this.themes) {
         this.themes.fontSize(fontSize + "px");
       }
+
+      setFontSize(fontSize)
     },
     registerTheme() {
       this.themeList.forEach(theme => {
