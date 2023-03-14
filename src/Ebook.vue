@@ -3,9 +3,13 @@
     <title-bar :ifTitleAndMenuShow="ifTitleAndMenuShow"></title-bar>
     <div class="read-wrapper">
       <div class="mask">
-        <div v-if="!isMobile" class="left" @click="prevPage">Click for pre page.</div>
+        <div v-if="!isMobile" class="left" @click="prevPage">
+          Click for pre page.
+        </div>
         <div id="center" class="center" @click="toggleTitleAndMenu"></div>
-        <div v-if="!isMobile" class="right" @click="nextPage">Click for next page.</div>
+        <div v-if="!isMobile" class="right" @click="nextPage">
+          Click for next page.
+        </div>
       </div>
 
       <div id="read"></div>
@@ -30,11 +34,12 @@
 <script>
 import localForage from "localforage";
 import Epub from "epubjs";
+import Hammer from "hammerjs";
 
 import TitleBar from "@/components/TitleBar";
 import MenuBar from "@/components/MenuBar";
 
-import {getFontSize,setFontSize,isMobile} from './utils/font-size'
+import { getFontSize, setFontSize, isMobile } from "./utils/font-size";
 
 export default {
   components: {
@@ -43,7 +48,7 @@ export default {
   },
   data() {
     return {
-      isMobile:isMobile(),
+      isMobile: isMobile(),
       currentBookName: "",
       ifTitleAndMenuShow: false,
       fontSizeList: [
@@ -128,12 +133,36 @@ export default {
       });
 
       this.rendition.on("rendered", (e, i) => {
-        i.document.documentElement.addEventListener(
-          "click",
-          (cfiRange, contents) => {
-            this.toggleTitleAndMenu();
+        let doc = i.document.documentElement;
+        doc.addEventListener("click", (cfiRange, contents) => {
+          this.toggleTitleAndMenu();
+        });
+
+        // Create a manager to manager the element
+        var manager = new Hammer.Manager(doc);
+
+        // Create a recognizer
+        var Swipe = new Hammer.Swipe();
+
+        // Add the recognizer to the manager
+        manager.add(Swipe);
+
+        // Declare global variables to swiped correct distance
+
+        // Subscribe to a desired event
+        manager.on("swipe", e => {
+          var direction = e.offsetDirection;
+
+          console.log(direction);
+
+          if (direction === 2) {
+            this.nextPage();
           }
-        );
+
+          if (direction === 4) {
+            this.prevPage();
+          }
+        });
       });
 
       let cfi = this.$route.query.cfi || void 0;
@@ -190,7 +219,7 @@ export default {
         this.themes.fontSize(fontSize + "px");
       }
 
-      setFontSize(fontSize)
+      setFontSize(fontSize);
     },
     registerTheme() {
       this.themeList.forEach(theme => {
@@ -267,6 +296,7 @@ export default {
   border: 1px dashed greenyellow;
   border-top: none;
   border-bottom: none;
+  box-sizing: border-box;
 }
 </style>
 
