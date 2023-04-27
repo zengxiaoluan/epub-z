@@ -134,9 +134,13 @@ export default {
 
       this.rendition.on("rendered", (e, i) => {
         let doc = i.document.documentElement;
-        doc.addEventListener("click", (cfiRange, contents) => {
+        doc.addEventListener("click", (e, contents, ...args) => {
+          console.log(e, contents, args);
+          if (e.target.tagName === "A") return;
           this.toggleTitleAndMenu();
         });
+
+        if (!this.isMobile) return;
 
         // Create a manager to manager the element
         var manager = new Hammer.Manager(doc);
